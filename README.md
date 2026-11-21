@@ -44,9 +44,26 @@ Exemplo completo de cobrança + webhook, 18 linhas: [`examples/charge-and-webhoo
 | `mp.charges` | `create`, `retrieve`, `list({ status, page, limit })`, `cancel`, `refund(id, { amount?, reason? })` |
 | `mp.withdrawals` | `create`, `retrieve`, `list({ page, limit })` |
 | `mp.webhookEndpoints` | `create({ url, secret, events })`, `list`, `retrieve`, `update` (`{ isActive: true }` reativa), `delete`, `deliveries`, `delivery(id)` |
+| `mp.sandbox` | só no sandbox: `charges.pay(id)`, `charges.dispute(id, { type?, amount? })`, `disputes.close(id, { result: 'LOST' \| 'WON' })`, `withdrawals.complete(id)`, `withdrawals.fail(id, { reason? })`, `withdrawals.return(id)`, `refunds.complete(refundId)`, `refunds.fail(refundId)` |
 | `mp.webhooks` | `constructEvent(rawBody, headers, secret)`, `verifySignature(rawBody, header, secret)` |
 
 Saques com chave de API só passam com "exigir 2FA nos saques" desligado no painel; ligado (padrão), a API responde 403 `TOTP_REQUIRED`.
+
+## Sandbox
+
+O sandbox é a mesma API num endereço separado, com chaves `pk_test_`/`sk_test_` criadas no painel do sandbox. Para testar, troque só `baseUrl` e a chave; nenhum dinheiro de verdade se move.
+
+```js
+const mp = new MaximoPay({ appId: 'pk_test_...', appSecret: 'sk_test_...', baseUrl: 'https://sandbox-api.seudominio.com.br/v1' });
+
+const charge = await mp.charges.create({ amount: 1500, paymentMethod: 'PIX', customer });
+await mp.sandbox.charges.pay(charge.id); // → PAID, e o seu webhook recebe charge.paid
+```
+
+- Toda cobrança, saque e webhook traz `livemode`: `false` no sandbox. Confira no webhook se o evento é do ambiente que você espera.
+- Chave de teste na API real: 401 `TEST_KEY_ON_LIVE`, com a URL do sandbox em `error.details.sandboxUrl`. Chave real no sandbox: 401 `LIVE_KEY_ON_SANDBOX`.
+- Saques e devoluções concluem sozinhos em uns 5 s; `mp.sandbox.withdrawals.fail`/`refunds.fail` servem para testar a falha antes disso. Cobranças só são pagas pelo comando.
+- Os comandos respondem o objeto atualizado. Eles não têm chave de idempotência, então o SDK nunca os repete; repetir um comando já aplicado dá 409 `SANDBOX_INVALID_STATE` (`details.status`). Na API real eles dão 404.
 
 ## Webhooks
 

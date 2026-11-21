@@ -61,6 +61,8 @@ export interface Charge {
   createdAt: string;
   /** Página pronta de pagamento Pix. */
   checkoutUrl?: string;
+  /** `false` no sandbox, `true` na API real. */
+  livemode?: boolean;
   metadata?: {
     /** Código Pix copia e cola (para o QR). */
     pixCopiaECola?: string;
@@ -109,6 +111,8 @@ export interface Withdrawal {
   amount: MinorUnits | number;
   referenceId?: string | null;
   createdAt: string;
+  /** `false` no sandbox, `true` na API real. */
+  livemode?: boolean;
   [key: string]: unknown;
 }
 
@@ -174,6 +178,8 @@ export interface ChargeEventData {
   referenceId?: string | null;
   refundAmount?: MinorUnits;
   occurredAt: string;
+  /** `false` quando o webhook veio do sandbox. */
+  livemode?: boolean;
   [key: string]: unknown;
 }
 
@@ -183,4 +189,27 @@ export interface WebhookEvent<T = Record<string, unknown>> {
   /** `X-Event`, ex. `charge.paid`. */
   type: WebhookEventType | (string & {});
   data: T;
+}
+
+/** MED (disputa) como a API responde; ver /api/docs para os demais campos. */
+export interface Dispute {
+  id: string;
+  status?: string;
+  resolution?: string;
+  [key: string]: unknown;
+}
+
+export interface SandboxDisputeParams {
+  /** Padrão `FRAUD`. */
+  type?: 'FRAUD' | 'REFUND_REQUEST';
+  /** Centavos contestados; sem ele, o valor total da cobrança. */
+  amount?: number | string;
+}
+
+export interface CloseSandboxDisputeParams {
+  result: 'LOST' | 'WON';
+}
+
+export interface FailSandboxWithdrawalParams {
+  reason?: string;
 }
