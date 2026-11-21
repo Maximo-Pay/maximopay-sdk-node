@@ -2,7 +2,7 @@
   "name": "@maximopay/node",
   "version": "0.1.0",
   "description": "SDK oficial do Máximo Pay para Node.js: cobranças, saques e webhooks assinados.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=18"
