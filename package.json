@@ -1,0 +1,33 @@
+{
+  "name": "@maximopay/node",
+  "version": "0.1.0",
+  "description": "SDK oficial do Máximo Pay para Node.js: cobranças, saques e webhooks assinados.",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && tsc -p tsconfig.types.json && node scripts/package-markers.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && rm -rf build-test && tsc -p tsconfig.test.json && node --test build-test/test/*.test.js",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.9",
+    "typescript": "5.8.3"
+  }
+}
