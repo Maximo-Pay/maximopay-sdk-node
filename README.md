@@ -92,3 +92,7 @@ npm run typecheck
 ```
 
 Os vetores em `contract/webhook-signature-vectors.json` são cópia do arquivo que o webhook-service testa (`sdks/contract` no fintech-baas-api). Se a assinatura mudar na API, atualize a cópia aqui.
+
+## Licença
+
+MIT. Veja [LICENSE](LICENSE).
